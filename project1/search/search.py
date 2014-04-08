@@ -80,9 +80,9 @@ def graph_search(fringe, problem):
     for successor in problem.getSuccessors(start):
         fringe.push(successor)
 
-    closed = set(start)
+    closed = set()
+    closed.add(start)
     path = {}
-    node = None
 
     while not fringe.isEmpty():
         node = fringe.pop()
@@ -93,7 +93,7 @@ def graph_search(fringe, problem):
             path[node] = [action]
 
         if problem.isGoalState(state):
-            break
+            return path[node]
 
         if state not in closed:
             closed.add(state)
@@ -110,7 +110,7 @@ def graph_search(fringe, problem):
 
                 fringe.push(child_node)
 
-    return path[node]
+    return None
 
 
 def depthFirstSearch(problem):
@@ -143,8 +143,44 @@ def breadthFirstSearch(problem):
 
 def uniformCostSearch(problem):
     "Search the node of least total cost first. "
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+
+    fringe = util.PriorityQueue()
+
+    start = problem.getStartState()
+    for successor in problem.getSuccessors(start):
+        fringe.push(successor, successor[2])
+
+    closed = set()
+    closed.add(start)
+    path = {}
+
+    while not fringe.isEmpty():
+        node = fringe.pop()
+        state = node[0]
+        action = node[1]
+
+        if node not in path:
+            path[node] = [action]
+
+        if problem.isGoalState(state):
+            return path[node]
+
+        if state not in closed:
+            closed.add(state)
+
+            successors = problem.getSuccessors(state)
+            for child_node in successors:
+                if child_node in path:
+                    continue
+
+                cur_path = path[node][:]
+                cur_path.append(child_node[1])
+
+                path[child_node] = cur_path
+
+                fringe.push(child_node, child_node[2])
+
+    return None
 
 def nullHeuristic(state, problem=None):
     """
