@@ -158,6 +158,7 @@ def uniformCostSearch(problem):
         node = fringe.pop()
         state = node[0]
         action = node[1]
+        cost = node[2]
 
         if node not in path:
             path[node] = [action]
@@ -178,7 +179,7 @@ def uniformCostSearch(problem):
 
                 path[child_node] = cur_path
 
-                fringe.push(child_node, child_node[2])
+                fringe.push(child_node, child_node[2] + cost)
 
     return None
 
