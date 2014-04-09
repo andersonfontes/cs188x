@@ -284,17 +284,17 @@ class CornersProblem(search.SearchProblem):
         self._expanded = 0 # DO NOT CHANGE; Number of search nodes expanded
         # Please add any code here which you would like to use
         # in initializing the problem
-        "*** YOUR CODE HERE ***"
+
+        self.startState = (self.startingPosition, (True, True, True, True))
 
     def getStartState(self):
         "Returns the start state (in your state space, not the full Pacman state space)"
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return self.startState
 
     def isGoalState(self, state):
         "Returns whether this search state is a goal state of the problem"
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+
+        return state[1] == (False, False, False, False)
 
     def getSuccessors(self, state):
         """
@@ -308,6 +308,13 @@ class CornersProblem(search.SearchProblem):
          cost of expanding to that successor
         """
 
+        x, y = state[0]
+        dots = state[1]
+        #if (x, y) in self.corners:
+        #    tmp = list(dots)
+        #    tmp[self.corners.index((x, y))] = False
+        #    dots = tuple(tmp)
+
         successors = []
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
             # Add a successor state to the successor list if the action is legal
@@ -316,10 +323,24 @@ class CornersProblem(search.SearchProblem):
             #   dx, dy = Actions.directionToVector(action)
             #   nextx, nexty = int(x + dx), int(y + dy)
             #   hitsWall = self.walls[nextx][nexty]
+            dx, dy = Actions.directionToVector(action)
+            nextx, nexty = int(x + dx), int(y + dy)
 
-            "*** YOUR CODE HERE ***"
+            if not self.walls[nextx][nexty]:
+
+                if (nextx, nexty) in self.corners:
+                    tmp = list(dots)
+                    tmp[self.corners.index((nextx, nexty))] = False
+                    dots = tuple(tmp)
+
+                print dots
+                nextState = ((nextx, nexty), dots)
+                successor = (nextState, action, 1)
+
+                successors.append(successor)
 
         self._expanded += 1 # DO NOT CHANGE
+        print successors
         return successors
 
     def getCostOfActions(self, actions):
@@ -327,6 +348,7 @@ class CornersProblem(search.SearchProblem):
         Returns the cost of a particular sequence of actions.  If those actions
         include an illegal move, return 999999.  This is implemented for you.
         """
+        print actions
         if actions == None: return 999999
         x,y= self.startingPosition
         for action in actions:
