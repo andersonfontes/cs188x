@@ -100,9 +100,6 @@ def graph_search(fringe, problem):
 
             successors = problem.getSuccessors(state)
             for child_node in successors:
-                if child_node in path:
-                    continue
-
                 cur_path = path[node][:]
                 cur_path.append(child_node[1])
 
@@ -156,9 +153,7 @@ def uniformCostSearch(problem):
 
     while not fringe.isEmpty():
         node = fringe.pop()
-        state = node[0]
-        action = node[1]
-        cost = node[2]
+        state, action, cost = node
 
         if node not in path:
             path[node] = [action]
@@ -171,15 +166,14 @@ def uniformCostSearch(problem):
 
             successors = problem.getSuccessors(state)
             for child_node in successors:
-                if child_node in path:
-                    continue
+                cnode = (child_node[0], child_node[1], child_node[2] + cost)
 
                 cur_path = path[node][:]
                 cur_path.append(child_node[1])
 
-                path[child_node] = cur_path
+                path[cnode] = cur_path
 
-                fringe.push(child_node, child_node[2] + cost)
+                fringe.push(cnode, cnode[2])
 
     return None
 
