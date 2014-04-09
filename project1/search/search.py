@@ -169,7 +169,7 @@ def uniformCostSearch(problem):
                 cnode = (child_node[0], child_node[1], child_node[2] + cost)
 
                 cur_path = path[node][:]
-                cur_path.append(child_node[1])
+                cur_path.append(cnode[1])
 
                 path[cnode] = cur_path
 
