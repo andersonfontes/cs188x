@@ -334,7 +334,6 @@ class CornersProblem(search.SearchProblem):
                 successors.append(successor)
 
         self._expanded += 1 # DO NOT CHANGE
-        print successors
         return successors
 
     def getCostOfActions(self, actions):
@@ -342,7 +341,6 @@ class CornersProblem(search.SearchProblem):
         Returns the cost of a particular sequence of actions.  If those actions
         include an illegal move, return 999999.  This is implemented for you.
         """
-        print actions
         if actions == None: return 999999
         x,y= self.startingPosition
         for action in actions:
