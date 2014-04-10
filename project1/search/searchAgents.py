@@ -309,11 +309,6 @@ class CornersProblem(search.SearchProblem):
         """
 
         x, y = state[0]
-        dots = state[1]
-        #if (x, y) in self.corners:
-        #    tmp = list(dots)
-        #    tmp[self.corners.index((x, y))] = False
-        #    dots = tuple(tmp)
 
         successors = []
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
@@ -328,12 +323,11 @@ class CornersProblem(search.SearchProblem):
 
             if not self.walls[nextx][nexty]:
 
+                dots = list(state[1])
                 if (nextx, nexty) in self.corners:
-                    tmp = list(dots)
-                    tmp[self.corners.index((nextx, nexty))] = False
-                    dots = tuple(tmp)
+                    dots[self.corners.index((nextx, nexty))] = False
+                dots = tuple(dots)
 
-                print dots
                 nextState = ((nextx, nexty), dots)
                 successor = (nextState, action, 1)
 
