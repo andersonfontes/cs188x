@@ -473,13 +473,28 @@ def foodHeuristic(state, problem):
 
     x, y = position
     h = -1
-
+    lfood = None
+    foods = foodGrid.count()
     for food in foodGrid.asList():
         fx, fy = food
-        h = max(h, abs(x - fx) + abs(y - fy))
+        d = abs(x - fx) + abs(y - fy) + foods
+        if d > h:
+            lfood = food
+            h = d
 
     if h == -1:
         return 0
+
+    if 'mazeDistance' not in problem.heuristicInfo:
+        problem.heuristicInfo['mazeDistance'] = mazeDistance(position, lfood, problem.startingGameState)
+        h = min(h, problem.heuristicInfo['mazeDistance'])
+
+    #if 'last_h' not in problem.heuristicInfo:
+    #    problem.heuristicInfo['last_h'] = h
+    #elif problem.heuristicInfo['last_h'] - h > 1:
+    #    h = problem.heuristicInfo['last_h'] - 1
+    #else:
+    #    problem.heuristicInfo['last_h'] = h
 
     return h
 
