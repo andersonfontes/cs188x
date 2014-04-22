@@ -76,9 +76,12 @@ class ReflexAgent(Agent):
 
         farest_food = 0
         nearest_food = 99999
-        for food in newFood.asList():
-            farest_food = max(farest_food, manhattanDistance(newPos, food))
-            nearest_food = min(nearest_food, manhattanDistance(newPos, food))
+        if newFood.count() > 0:
+            for food in newFood.asList():
+                farest_food = max(farest_food, manhattanDistance(newPos, food))
+                nearest_food = min(nearest_food, manhattanDistance(newPos, food))
+        else:
+            nearest_food = 0
 
         c = 0
         for capsule in successorGameState.getCapsules():
@@ -90,9 +93,7 @@ class ReflexAgent(Agent):
             ng = min(ng, manhattanDistance(newPos, ghost.getPosition()))
             fg = max(fg, manhattanDistance(newPos, ghost.getPosition()))
 
-        #evaluation = newFood.count() + successorGameState.getScore() - c - g + newScaredTimes[0]
-        #evaluation = -newFood.count(False) + successorGameState.getScore() - farest_food + g
-        evaluation = -newFood.count(False) + successorGameState.getScore() - farest_food + ng - c
+        evaluation = successorGameState.getScore() - newFood.count(False) - nearest_food + ng
 
         return evaluation
 
