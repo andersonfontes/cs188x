@@ -149,8 +149,74 @@ class MinimaxAgent(MultiAgentSearchAgent):
           gameState.getNumAgents():
             Returns the total number of agents in the game
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+
+        pacman_actions = gameState.getLegalActions(0)
+        # ghosts_actions = [gameState.getLegalActions(i)
+        #                   for i in range(1, gameState.getNumAgents())]
+
+        scores = []
+        states = []
+        print(pacman_actions)
+        for action in pacman_actions:
+            print(action)
+            state = gameState.generateSuccessor(0, action)
+            states.append(state)
+            self.cur_depth = 0
+            self.is_max = True
+            scores.append(self.get_value(state))
+
+        best_score = max(scores)
+
+        best_indices = [i for i in range(len(scores)) if scores[i] == best_score]
+        print(scores, best_indices, pacman_actions)
+        return pacman_actions[random.choice(best_indices)]
+
+    def get_value(self, state):
+        # print(self.depth, self.cur_depth)
+        if self.cur_depth >= self.depth\
+                or state.isWin() or state.isLose():
+
+            print(state.isWin(), state.isLose())
+            print(self.depth, self.cur_depth)
+
+            if self.cur_depth < self.depth:
+                self.cur_depth -= 1
+
+            self.is_max = not self.is_max
+
+            return self.evaluationFunction(state)
+
+        self.cur_depth += 1
+        self.is_max = not self.is_max
+
+        if self.is_max:
+            print('max')
+            # self.is_max = False
+            v = self.get_max_value(state)
+            print(v)
+            return v
+        else:
+            print('min')
+            # self.is_max = True
+            v = self.get_min_value(state)
+            print(v)
+            return v
+
+    def get_max_value(self, state):
+        v = -99999
+        for action in state.getLegalActions():
+            new_state = state.generateSuccessor(0, action)
+            v = max(v, self.get_value(new_state))
+            print('here')
+        return v
+
+    def get_min_value(self, state):
+        v = 99999
+        for action in state.getLegalActions():
+            new_state = state.generateSuccessor(0, action)
+            v = min(v, self.get_value(new_state))
+        return v
+
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
     """
@@ -191,4 +257,3 @@ def betterEvaluationFunction(currentGameState):
 
 # Abbreviation
 better = betterEvaluationFunction
-
