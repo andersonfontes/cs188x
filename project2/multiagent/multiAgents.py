@@ -156,9 +156,9 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
         scores = []
         states = []
-        print(pacman_actions)
+        # print(pacman_actions)
         for action in pacman_actions:
-            print(action)
+            # print(action)
             state = gameState.generateSuccessor(0, action)
             states.append(state)
             self.cur_depth = 0
@@ -168,7 +168,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
         best_score = max(scores)
 
         best_indices = [i for i in range(len(scores)) if scores[i] == best_score]
-        print(scores, best_indices, pacman_actions)
+        # print(scores, best_indices, pacman_actions)
         return pacman_actions[random.choice(best_indices)]
 
     def get_value(self, state):
@@ -176,30 +176,30 @@ class MinimaxAgent(MultiAgentSearchAgent):
         if self.cur_depth >= self.depth\
                 or state.isWin() or state.isLose():
 
-            print(state.isWin(), state.isLose())
-            print(self.depth, self.cur_depth)
+            # print(state.isWin(), state.isLose())
+            # print(self.depth, self.cur_depth)
 
-            if self.cur_depth < self.depth:
-                self.cur_depth -= 1
-
-            self.is_max = not self.is_max
-
-            return self.evaluationFunction(state)
+            v = self.evaluationFunction(state)
+            # print('max=%s, cur_depth=%s, v=%s' % (self.is_max, self.cur_depth, v))
+            return v
 
         self.cur_depth += 1
         self.is_max = not self.is_max
+        # print('max=%s, cur_depth=%s' % (self.is_max, self.cur_depth))
 
         if self.is_max:
-            print('max')
-            # self.is_max = False
+            # print('max, depth=%s' % self.cur_depth)
             v = self.get_max_value(state)
-            print(v)
+            self.cur_depth -= 1
+            self.is_max = not self.is_max
+            # print('max ', v)
             return v
         else:
-            print('min')
-            # self.is_max = True
+            # print('min, depth=%s' % self.cur_depth)
             v = self.get_min_value(state)
-            print(v)
+            self.cur_depth -= 1
+            self.is_max = not self.is_max
+            # print('min ', v)
             return v
 
     def get_max_value(self, state):
@@ -207,7 +207,6 @@ class MinimaxAgent(MultiAgentSearchAgent):
         for action in state.getLegalActions():
             new_state = state.generateSuccessor(0, action)
             v = max(v, self.get_value(new_state))
-            print('here')
         return v
 
     def get_min_value(self, state):
