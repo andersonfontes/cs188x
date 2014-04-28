@@ -150,70 +150,59 @@ class MinimaxAgent(MultiAgentSearchAgent):
             Returns the total number of agents in the game
         """
 
-        pacman_actions = gameState.getLegalActions(0)
-        # ghosts_actions = [gameState.getLegalActions(i)
-        #                   for i in range(1, gameState.getNumAgents())]
+        if gameState.isWin() or gameState.isLose():
+            return self.evaluationFunction()
 
+        pacman_actions = gameState.getLegalActions(0)
+        self.agents = gameState.getNumAgents()
         scores = []
         states = []
-        # print(pacman_actions)
         for action in pacman_actions:
-            # print(action)
+            self.cur_depth = 1
+            self.cur_agent = 0
             state = gameState.generateSuccessor(0, action)
             states.append(state)
-            self.cur_depth = 0
-            self.is_max = True
             scores.append(self.get_value(state))
-
         best_score = max(scores)
-
         best_indices = [i for i in range(len(scores)) if scores[i] == best_score]
-        # print(scores, best_indices, pacman_actions)
         return pacman_actions[random.choice(best_indices)]
 
     def get_value(self, state):
-        # print(self.depth, self.cur_depth)
-        if self.cur_depth >= self.depth\
+        if self.cur_depth > self.depth * self.agents - 1\
                 or state.isWin() or state.isLose():
-
-            # print(state.isWin(), state.isLose())
-            # print(self.depth, self.cur_depth)
-
             v = self.evaluationFunction(state)
-            # print('max=%s, cur_depth=%s, v=%s' % (self.is_max, self.cur_depth, v))
             return v
 
         self.cur_depth += 1
-        self.is_max = not self.is_max
-        # print('max=%s, cur_depth=%s' % (self.is_max, self.cur_depth))
 
-        if self.is_max:
-            # print('max, depth=%s' % self.cur_depth)
-            v = self.get_max_value(state)
+        self.cur_agent += 1
+        if self.cur_agent >= self.agents:
+            self.cur_agent = 0
+
+        successors = [state.generateSuccessor(self.cur_agent, action)
+                      for action in state.getLegalActions(self.cur_agent)]
+
+        if self.cur_agent == 0:
+            v = self.get_max_value(successors)
             self.cur_depth -= 1
-            self.is_max = not self.is_max
-            # print('max ', v)
+            self.cur_agent = self.agents - 1
             return v
         else:
-            # print('min, depth=%s' % self.cur_depth)
-            v = self.get_min_value(state)
+            v = self.get_min_value(successors)
             self.cur_depth -= 1
-            self.is_max = not self.is_max
-            # print('min ', v)
+            self.cur_agent -= 1
             return v
 
-    def get_max_value(self, state):
+    def get_max_value(self, successors):
         v = -99999
-        for action in state.getLegalActions():
-            new_state = state.generateSuccessor(0, action)
-            v = max(v, self.get_value(new_state))
+        for successor in successors:
+            v = max(v, self.get_value(successor))
         return v
 
-    def get_min_value(self, state):
+    def get_min_value(self, successors):
         v = 99999
-        for action in state.getLegalActions():
-            new_state = state.generateSuccessor(0, action)
-            v = min(v, self.get_value(new_state))
+        for successor in successors:
+            v = min(v, self.get_value(successor))
         return v
 
 
