@@ -298,8 +298,62 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
           All ghosts should be modeled as choosing uniformly at random from their
           legal moves.
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+
+        if gameState.isWin() or gameState.isLose():
+            return self.evaluationFunction()
+
+        pacman_actions = gameState.getLegalActions(0)
+        self.agents = gameState.getNumAgents()
+        scores = []
+        for action in pacman_actions:
+            self.cur_depth = 1
+            self.cur_agent = 0
+            state = gameState.generateSuccessor(0, action)
+            scores.append(self.get_value(state))
+        best_score = max(scores)
+        best_indices = [i for i in range(len(scores)) if scores[i] == best_score]
+        return pacman_actions[random.choice(best_indices)]
+
+    def get_value(self, state):
+        if self.cur_depth > self.depth * self.agents - 1\
+                or state.isWin() or state.isLose():
+            v = self.evaluationFunction(state)
+            return v
+
+        self.cur_depth += 1
+
+        self.cur_agent += 1
+        if self.cur_agent >= self.agents:
+            self.cur_agent = 0
+
+        if self.cur_agent == 0:
+            v = self.get_max_value(state)
+            self.cur_depth -= 1
+            self.cur_agent = self.agents - 1
+            return v
+        else:
+            v = self.get_exp_value(state)
+            self.cur_depth -= 1
+            self.cur_agent -= 1
+            return v
+
+    def get_max_value(self, state):
+        v = -99999
+        for action in state.getLegalActions(self.cur_agent):
+            successor = state.generateSuccessor(self.cur_agent, action)
+            v = max(v, self.get_value(successor))
+        return v
+
+    def get_exp_value(self, state):
+        v = 0
+        actions = state.getLegalActions(self.cur_agent)
+        num_actions = float(len(actions))
+        p = 1.0 / num_actions
+        for action in actions:
+            successor = state.generateSuccessor(self.cur_agent, action)
+            v += p * self.get_value(successor)
+        return v
+
 
 def betterEvaluationFunction(currentGameState):
     """
