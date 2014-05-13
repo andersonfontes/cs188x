@@ -55,10 +55,6 @@ class QLearningAgent(ReinforcementAgent):
         if state not in self.q_values or not self.q_values[state]:
             return 0.0
 
-        # q_value = -9999
-        # for value in self.q_values[state].values():
-        #     q_value = max(value, q_value)
-        # return q_value
         return self.q_values[state][action]
 
     def computeValueFromQValues(self, state):
@@ -85,10 +81,12 @@ class QLearningAgent(ReinforcementAgent):
 
         actions = self.getLegalActions(state)
 
-        if state not in self.q_values or not actions:
+        if not actions:
             return None
 
-        return self.q_values[state].argMax()
+        values = [self.getQValue(state, action) for action in actions]
+
+        return actions[values.index(max(values))]
 
     def getAction(self, state):
         """
